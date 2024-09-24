@@ -1,0 +1,24 @@
+## Authentication
+auth/*
+.env*
+
+## R & Rstudio
+.Rhistory
+.Renviron
+.RData
+.Rproj.user
+.Rproj.user/
+.Rapp.history
+.RData
+.Ruserdata
+*-Ex.R
+/*.tar.gz
+/*.Rcheck/
+^.DS_Store$
+
+## MongoDB
+.idea
+
+/.quarto/
+docs
+*.html

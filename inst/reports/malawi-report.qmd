@@ -1,0 +1,156 @@
+---
+title: "Malawi lake report"
+subtitle: "Preliminary analyses"
+format:
+   html:
+     self-contained: true
+     theme:
+       light: flatly
+       dark: darkly
+code-fold: true
+code-summary: "Show the code"
+editor: visual
+css: style.css
+toc: true
+toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(magrittr)
+
+dat <- peskas.malawi.pipeline::all_groups_processed
+
+my_palette <- c(
+  "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",
+  "#cccc28", "#A65628", "#F781BF", "#999999", "#66C2A5",
+  "#FC8D62", "#00BFFF", "#808000"
+)
+
+catch_palette <-
+  c(
+    "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",
+    "#cccc28", "#A65628", "#F781BF", "#999999", "#66C2A5",
+    "#FC8D62", "#00BFFF", "#808000", "#ccff00", "#FAEBD7",
+    "#00FFFF", "#7FFFD4"
+  )
+```
+
+# Data distribution
+
+```{r, warning=FALSE, message=FALSE}
+sites <-
+  dat %>%
+  dplyr::select(submission_id, sample_district) %>%
+  dplyr::group_by(sample_district) %>%
+  dplyr::count() %>%
+  dplyr::arrange(-n) %>%
+  # dplyr::filter(n > 150) %>%
+  magrittr::extract2("sample_district")
+
+
+dat %>%
+  dplyr::filter(!is.na(sample_district)) %>%
+  dplyr::select(submission_id, today, sample_district) %>%
+  tidyr::complete(sample_district, today) %>%
+  dplyr::mutate(record = ifelse(is.na(submission_id), 0, 1)) %>%
+  dplyr::group_by(sample_district) %>%
+  dplyr::mutate(obs = sum(record)) %>%
+  ggplot(aes(today, reorder(sample_district, obs), fill = as.factor(record), alpha = record)) +
+  theme_minimal() +
+  geom_tile(width = 3) +
+  coord_cartesian(expand = FALSE) +
+  scale_fill_manual(values = c("transparent", "#047474")) +
+  # scale_x_date(date_breaks = "4 months", date_labels = "%y-%b") +
+  theme(legend.position = "") +
+  labs(y = "", x = "Date")
+```
+
+```{r, warning=FALSE, message=FALSE}
+dat %>%
+  dplyr::select(submission_id, lat, lon) %>%
+  dplyr::filter(!is.na(lat)) %>%
+  leaflet::leaflet() %>%
+  leaflet::addTiles() %>%
+  leaflet::addProviderTiles("USGS.USImageryTopo") %>%
+  leaflet.extras::addHeatmap(
+    lng = ~lon,
+    lat = ~lat,
+    blur = 20,
+    max = 0.05,
+    radius = 15
+  )
+```
+
+# Catch composition
+
+```{r, warning=FALSE, message=FALSE}
+top10 <-
+  dat %>%
+  dplyr::select(submission_id, sample_district, fish_species, weight) %>%
+  dplyr::group_by(sample_district, fish_species) %>%
+  dplyr::summarise(tot_weight = sum(weight, na.rm = T)) %>%
+  dplyr::group_by(sample_district) %>%
+  dplyr::arrange(-tot_weight, .by_group = T) %>%
+  dplyr::slice_head(n = 10) %>%
+  dplyr::ungroup() %>%
+  magrittr::extract2("fish_species") %>%
+  unique()
+
+dat %>%
+  dplyr::filter(!is.na(fish_species)) %>%
+  dplyr::select(submission_id, sample_district, fish_species, weight) %>%
+  dplyr::mutate(fish_species = ifelse(fish_species %in% top10, fish_species, "Others")) %>%
+  dplyr::group_by(sample_district, fish_species) %>%
+  dplyr::summarise(weight_tot = sum(weight)) %>%
+  dplyr::group_by(sample_district) %>%
+  dplyr::arrange(-weight_tot, .by_group = T) %>%
+  dplyr::slice_head(n = 10) %>%
+  dplyr::ungroup() %>%
+  tidyr::complete(sample_district, fish_species) %>%
+  tidyr::replace_na(list(weight_tot = 0)) %>%
+  dplyr::group_by(sample_district) %>%
+  dplyr::arrange(-weight_tot, .by_group = T) %>%
+  dplyr::mutate(weight_tot = round(weight_tot, 2)) %>%
+  apexcharter::apex(
+    type = "bar",
+    mapping = apexcharter::aes(x = sample_district, y = weight_tot, fill = fish_species),
+    height = 500
+  ) %>%
+  apexcharter::ax_chart(
+    stacked = TRUE,
+    stackType = "100%"
+  ) %>%
+  apexcharter::ax_colors(catch_palette) %>%
+  apexcharter::ax_xaxis(
+    title = list(
+      text = "Relative catch composition (%)"
+    )
+  )
+```
+
+# Market
+
+```{r, warning=FALSE, message=FALSE}
+dat %>%
+  dplyr::mutate(value = ifelse(value_type == "total", value_species / weight, value_species)) %>%
+  dplyr::filter(!is.na(value_species)) %>%
+  dplyr::mutate(pricekg_USD = value * 0.0006) %>%
+  dplyr::select(submission_id, sample_district, pricekg_USD, fish_species) %>%
+  dplyr::group_by(fish_species) %>%
+  dplyr::filter(!is.na(fish_species)) %>%
+  dplyr::mutate(mean_price = mean(pricekg_USD, na.rm = T)) %>%
+  ggplot(aes(y = reorder(fish_species, mean_price), x = pricekg_USD)) +
+  theme_minimal() +
+  geom_boxplot(color = "grey20", fill = "#66C2A5", alpha = 0.5, size = 0.25) +
+  coord_flip() +
+  geom_vline(xintercept = 1, linetype = 2, color = "firebrick") +
+  labs(x = "Price per kg (USD)", y = "") +
+  scale_x_continuous(n.breaks = 12) +
+  coord_cartesian(x = c(0, NA), expand = F)
+```
