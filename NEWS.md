@@ -1,4 +1,4 @@
-# peskas.malawi.pipeline 1.1.0
+# peskas.malawi.data.pipeline 1.1.0
 
 ### New features
 

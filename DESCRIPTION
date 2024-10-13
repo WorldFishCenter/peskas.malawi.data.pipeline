@@ -1,4 +1,4 @@
-Package: peskas.malawi.pipeline
+Package: peskas.malawi.data.pipeline
 Type: Package
 Title: Functions to Implement the Malawi Small Scale Fisheries Data Pipeline
 Version: 1.1.0
