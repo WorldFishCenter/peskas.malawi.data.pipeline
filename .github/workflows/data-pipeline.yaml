@@ -8,9 +8,9 @@ on:
 env:
   KOBO_ASSETS_ID: ${{ secrets.KOBO_ASSETS_ID }}
   KOBO_USERNAME: ${{ secrets.KOBO_USERNAME }}
-  KOBO_KOBO_PASSWORD: ${{ secrets.KOBO_PASSWORD }}
-  PDS_TOKEN: ${{ secrets.PESKAS_PDS_TOKEN }}
-  PDS_SECRET: ${{ secrets.PESKAS_PDS_SECRET }}
+  KOBO_PASSWORD: ${{ secrets.KOBO_PASSWORD }}
+  PDS_TOKEN: ${{ secrets.PDS_TOKEN }}
+  PDS_SECRET: ${{ secrets.PDS_SECRET }}
   MONGODB_CONNECTION_STRING: ${{ secrets.MONGODB_CONNECTION_STRING }}
   GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
