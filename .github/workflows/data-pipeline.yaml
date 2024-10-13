@@ -49,31 +49,8 @@ jobs:
       - name: Set env to production
         if: endsWith(github.ref, '/main')
         run: echo "R_CONFIG_ACTIVE=production" >> $GITHUB_ENV
-
-      - name: Debug MongoDB URI
-        run: |
-          Rscript -e '
-          uri <- Sys.getenv("MONGODB_CONNECTION_STRING")
-          print(paste("URI class:", class(uri)))
-          print(paste("URI length:", nchar(uri)))
-          print(paste("URI prefix:", substr(uri, 1, 20), "..."))  # Print first 20 chars to avoid exposing full URI
-          '
-
       - name: Call ingest_landings()
-        run: |
-          Rscript -e '
-          tryCatch({
-            uri <- Sys.getenv("MONGODB_CONNECTION_STRING")
-            print(paste("About to call ingest_landings with URI of class:", class(uri)))
-            peskas.malawi.data.pipeline::ingest_landings()
-          }, error = function(e) {
-            print(paste("Error occurred:", e$message))
-            print(paste("In call:", e$call))
-            print("Traceback:")
-            print(traceback())
-            stop(e)
-          })
-          '
+        run: Rscript -e 'peskas.malawi.data.pipeline::ingest_landings()'
 
   preprocess-landings:
     name: Preprocess Malawi SSF landings
