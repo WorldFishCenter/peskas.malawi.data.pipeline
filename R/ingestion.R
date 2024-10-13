@@ -40,12 +40,19 @@ ingest_landings <- function(log_threshold = logger::DEBUG) {
 
   conf <- read_config()
 
+  mongo_uri <- conf$storage$mongodb$connection_string
+  logger::log_debug(paste("MongoDB URI class:", class(mongo_uri)))
+  logger::log_debug(paste("MongoDB URI length:", nchar(mongo_uri)))
+  logger::log_debug(paste("MongoDB URI prefix:", substr(mongo_uri, 1, 20), "..."))
+
   asset_info <- dplyr::tibble(
-    asset_id = c(conf$ingestion$koboform$asset1,
-                 conf$ingestion$koboform$asset2,
-                 conf$ingestion$koboform$asset3,
-                 conf$ingestion$koboform$asset4,
-                 conf$ingestion$koboform$asset5),
+    asset_id = c(
+      conf$ingestion$koboform$asset1,
+      conf$ingestion$koboform$asset2,
+      conf$ingestion$koboform$asset3,
+      conf$ingestion$koboform$asset4,
+      conf$ingestion$koboform$asset5
+    ),
     form_name = c(
       "Malawi SSF",
       "FISHERIES eCAS DATA",
@@ -90,14 +97,30 @@ ingest_landings <- function(log_threshold = logger::DEBUG) {
   combined_surveys <- dplyr::bind_rows(renamed_raw, .id = "form_name")
 
   logger::log_info("Uploading raw data to MongoDB")
+  # Debug: Print MongoDB connection string again before uploading
+  logger::log_debug(paste("MongoDB URI class before upload:", class(mongo_uri)))
+  logger::log_debug(paste("MongoDB URI length before upload:", nchar(mongo_uri)))
 
   # Upload preprocessed landings
-  mdb_collection_push(
-    data = combined_surveys,
-    connection_string = conf$storage$mongodb$connection_string,
-    collection_name = conf$storage$mongodb$database$pipeline$collection_name$raw,
-    db_name = conf$storage$mongodb$database$pipeline$name
+  tryCatch(
+    {
+      result <- mdb_collection_push(
+        data = combined_surveys,
+        connection_string = mongo_uri,
+        collection_name = conf$storage$mongodb$database$pipeline$collection_name$raw,
+        db_name = conf$storage$mongodb$database$pipeline$name
+      )
+      logger::log_info(paste("Ingestion process completed successfully. Inserted", result$nInserted, "documents."))
+    },
+    error = function(e) {
+      logger::log_error(paste("Error in ingest_landings:", e$message))
+      logger::log_debug(paste("Error call:", e$call))
+      logger::log_debug("Traceback:")
+      logger::log_debug(traceback())
+      stop(e)
+    }
   )
+
 
   logger::log_info("Ingestion process completed successfully.")
 }

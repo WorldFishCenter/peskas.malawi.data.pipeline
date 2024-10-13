@@ -53,21 +53,38 @@ mdb_collection_pull <- function(connection_string = NULL, collection_name = NULL
 #'
 #' @export
 mdb_collection_push <- function(data = NULL, connection_string = NULL, collection_name = NULL, db_name = NULL) {
-  # Connect to the MongoDB collection
-  collection <- mongolite::mongo(
-    collection = collection_name,
-    db = db_name,
-    url = connection_string
-  )
+  # Debug information
+  logger::log_debug(paste("mdb_collection_push - connection_string class:", class(connection_string)))
+  logger::log_debug(paste("mdb_collection_push - connection_string length:", nchar(connection_string)))
+  logger::log_debug(paste("mdb_collection_push - collection_name:", collection_name))
+  logger::log_debug(paste("mdb_collection_push - db_name:", db_name))
 
-  # Remove all existing documents in the collection
-  collection$remove("{}")
+  tryCatch({
+    # Connect to the MongoDB collection
+    collection <- mongolite::mongo(
+      collection = collection_name,
+      db = db_name,
+      url = connection_string
+    )
+    logger::log_info("MongoDB connection established successfully")
 
-  # Insert the new data
-  result <- collection$insert(data)
+    # Remove all existing documents in the collection
+    remove_result <- collection$remove("{}")
+    logger::log_info(paste("Removed", remove_result$removed, "documents from the collection"))
 
-  # Return the number of documents inserted
-  return(result)
+    # Insert the new data
+    insert_result <- collection$insert(data)
+    logger::log_info(paste("Inserted", insert_result$nInserted, "documents into the collection"))
+
+    # Return the number of documents inserted
+    return(insert_result)
+  }, error = function(e) {
+    logger::log_error(paste("Error in mdb_collection_push:", e$message))
+    logger::log_debug(paste("Error call:", e$call))
+    logger::log_debug("Traceback:")
+    logger::log_debug(traceback())
+    stop(e)
+  })
 }
 
 #' Get metadata tables
