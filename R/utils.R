@@ -68,7 +68,7 @@ read_config <- function() {
     config = Sys.getenv("R_CONFIG_ACTIVE", "default"),
     file = system.file("config.yml", package = "peskas.malawi.data.pipeline")
   )
-  logger::log_info("Using configuration: {attr(pars, 'config')}")
+  logger::log_info(paste("Using configuration:", attr(pars, "config")))
 
   # Explicitly set the MongoDB connection string from the environment variable
   pars$storage$mongodb$connection_string <- Sys.getenv("MONGODB_CONNECTION_STRING")
@@ -87,10 +87,11 @@ read_config <- function() {
     stop("MongoDB connection string is not set in the configuration or environment variable.")
   }
 
-  logger::log_debug("Running with parameters (sensitive info redacted):")
+  logger::log_debug("Running with parameters (sensitive info redacted)")
   redacted_pars <- pars
   redacted_pars$storage$mongodb$connection_string <- "<REDACTED>"
-  logger::log_debug(paste(capture.output(str(redacted_pars)), collapse = "\n"))
+  # Use dput instead of str to avoid issues with glue
+  logger::log_debug(paste(capture.output(dput(redacted_pars)), collapse = "\n"))
 
   pars
 }

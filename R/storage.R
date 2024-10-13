@@ -53,13 +53,13 @@ mdb_collection_pull <- function(connection_string = NULL, collection_name = NULL
 #'
 #' @export
 mdb_collection_push <- function(data = NULL, connection_string = NULL, collection_name = NULL, db_name = NULL) {
-  # Debug information
-  logger::log_debug(paste("mdb_collection_push - connection_string class:", class(connection_string)))
-  logger::log_debug(paste("mdb_collection_push - connection_string length:", nchar(connection_string)))
-  logger::log_debug(paste("mdb_collection_push - collection_name:", collection_name))
-  logger::log_debug(paste("mdb_collection_push - db_name:", db_name))
-
   tryCatch({
+    # Debug information
+    logger::log_debug(paste("mdb_collection_push - connection_string class:", class(connection_string)))
+    logger::log_debug(paste("mdb_collection_push - connection_string length:", nchar(connection_string)))
+    logger::log_debug(paste("mdb_collection_push - collection_name:", collection_name))
+    logger::log_debug(paste("mdb_collection_push - db_name:", db_name))
+
     # Connect to the MongoDB collection
     collection <- mongolite::mongo(
       collection = collection_name,
@@ -80,13 +80,13 @@ mdb_collection_push <- function(data = NULL, connection_string = NULL, collectio
     return(insert_result)
   }, error = function(e) {
     logger::log_error(paste("Error in mdb_collection_push:", e$message))
-    logger::log_debug(paste("Error call:", e$call))
+    logger::log_error(paste("Error class:", class(e)))
+    logger::log_error(paste("Error call:", deparse(e$call)))
     logger::log_debug("Traceback:")
-    logger::log_debug(traceback())
+    logger::log_debug(paste(capture.output(traceback()), collapse = "\n"))
     stop(e)
   })
 }
-
 #' Get metadata tables
 #'
 #' Get Metadata tables from Google sheets. This function downloads
