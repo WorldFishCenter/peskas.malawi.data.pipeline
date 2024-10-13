@@ -64,14 +64,33 @@ add_version <- function(filename, extension = "", sha_nchar = 7, sep = "__") {
 #'
 read_config <- function() {
   logger::log_info("Loading configuration file...")
-
   pars <- config::get(
     config = Sys.getenv("R_CONFIG_ACTIVE", "default"),
     file = system.file("config.yml", package = "peskas.malawi.data.pipeline")
   )
+  logger::log_info("Using configuration: {attr(pars, 'config')}")
 
-  logger::log_info("Using configutation: {attr(pars, 'config')}")
-  logger::log_debug("Running with parameters {pars}")
+  # Explicitly set the MongoDB connection string from the environment variable
+  pars$storage$mongodb$connection_string <- Sys.getenv("MONGODB_CONNECTION_STRING")
+
+  # Debug information for MongoDB connection string
+  logger::log_debug(paste("MongoDB URI class:", class(pars$storage$mongodb$connection_string)))
+  logger::log_debug(paste("MongoDB URI length:", nchar(pars$storage$mongodb$connection_string)))
+  if (nchar(pars$storage$mongodb$connection_string) > 0) {
+    logger::log_debug(paste("MongoDB URI prefix:", substr(pars$storage$mongodb$connection_string, 1, 20), "..."))
+  } else {
+    logger::log_warn("MongoDB connection string is empty or not set")
+  }
+
+  # Ensure MongoDB connection string is set
+  if (is.null(pars$storage$mongodb$connection_string) || pars$storage$mongodb$connection_string == "") {
+    stop("MongoDB connection string is not set in the configuration or environment variable.")
+  }
+
+  logger::log_debug("Running with parameters (sensitive info redacted):")
+  redacted_pars <- pars
+  redacted_pars$storage$mongodb$connection_string <- "<REDACTED>"
+  logger::log_debug(paste(capture.output(str(redacted_pars)), collapse = "\n"))
 
   pars
 }

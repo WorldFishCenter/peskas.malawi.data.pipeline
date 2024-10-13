@@ -40,10 +40,15 @@ ingest_landings <- function(log_threshold = logger::DEBUG) {
 
   conf <- read_config()
 
+  # Debug: Print MongoDB connection string
   mongo_uri <- conf$storage$mongodb$connection_string
-  logger::log_debug(paste("MongoDB URI class:", class(mongo_uri)))
-  logger::log_debug(paste("MongoDB URI length:", nchar(mongo_uri)))
-  logger::log_debug(paste("MongoDB URI prefix:", substr(mongo_uri, 1, 20), "..."))
+  logger::log_debug(paste("MongoDB URI class in ingest_landings:", class(mongo_uri)))
+  logger::log_debug(paste("MongoDB URI length in ingest_landings:", nchar(mongo_uri)))
+  if (nchar(mongo_uri) > 0) {
+    logger::log_debug(paste("MongoDB URI prefix in ingest_landings:", substr(mongo_uri, 1, 20), "..."))
+  } else {
+    logger::log_warn("MongoDB connection string is empty in ingest_landings")
+  }
 
   asset_info <- dplyr::tibble(
     asset_id = c(
@@ -101,28 +106,29 @@ ingest_landings <- function(log_threshold = logger::DEBUG) {
   logger::log_debug(paste("MongoDB URI class before upload:", class(mongo_uri)))
   logger::log_debug(paste("MongoDB URI length before upload:", nchar(mongo_uri)))
 
+  logger::log_info("Uploading raw data to MongoDB")
+  # Debug: Print MongoDB connection string again before uploading
+  logger::log_debug(paste("MongoDB URI class before upload:", class(mongo_uri)))
+  logger::log_debug(paste("MongoDB URI length before upload:", nchar(mongo_uri)))
+
   # Upload preprocessed landings
-  tryCatch(
-    {
-      result <- mdb_collection_push(
-        data = combined_surveys,
-        connection_string = mongo_uri,
-        collection_name = conf$storage$mongodb$database$pipeline$collection_name$raw,
-        db_name = conf$storage$mongodb$database$pipeline$name
-      )
-      logger::log_info(paste("Ingestion process completed successfully. Inserted", result$nInserted, "documents."))
-    },
-    error = function(e) {
-      logger::log_error(paste("Error in ingest_landings:", e$message))
-      logger::log_debug(paste("Error call:", e$call))
-      logger::log_debug("Traceback:")
-      logger::log_debug(traceback())
-      stop(e)
-    }
-  )
-
-
-  logger::log_info("Ingestion process completed successfully.")
+  tryCatch({
+    result <- mdb_collection_push(
+      data = combined_surveys,
+      connection_string = mongo_uri,
+      collection_name = conf$storage$mongodb$database$pipeline$collection_name$raw,
+      db_name = conf$storage$mongodb$database$pipeline$name
+    )
+    logger::log_info(paste("Ingestion process completed successfully. Inserted", result$nInserted, "documents."))
+  }, error = function(e) {
+    logger::log_error(paste("Error in ingest_landings:", e$message))
+    logger::log_error(paste("MongoDB URI class:", class(mongo_uri)))
+    logger::log_error(paste("MongoDB URI length:", nchar(mongo_uri)))
+    logger::log_debug(paste("Error call:", deparse(e$call)))
+    logger::log_debug("Traceback:")
+    logger::log_debug(paste(capture.output(traceback()), collapse = "\n"))
+    stop(e)
+  })
 }
 
 #' Process Survey Data into a Tidy Tibble
