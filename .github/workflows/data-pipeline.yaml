@@ -18,10 +18,10 @@ env:
 jobs:
   build-container:
     name: Build R container
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build image with cache
         id: build-docker
         uses: whoan/docker-build-with-cache-action@v5
