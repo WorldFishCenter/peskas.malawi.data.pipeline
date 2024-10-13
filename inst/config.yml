@@ -42,6 +42,7 @@ default:
 production:
   storage:
     mongodb:
+      connection_string: !expr Sys.getenv('MONGODB_CONNECTION_STRING')
 
 local:
   inherits: development

@@ -63,35 +63,15 @@ add_version <- function(filename, extension = "", sha_nchar = 7, sep = "__") {
 #' @export
 #'
 read_config <- function() {
-  message("Loading configuration file...")
+  logger::log_info("Loading configuration file...")
+
   pars <- config::get(
     config = Sys.getenv("R_CONFIG_ACTIVE", "default"),
     file = system.file("config.yml", package = "peskas.malawi.data.pipeline")
   )
-  message(paste("Using configuration:", attr(pars, "config")))
 
-  # Explicitly set the MongoDB connection string from the environment variable
-  pars$storage$mongodb$connection_string <- Sys.getenv("MONGODB_CONNECTION_STRING")
-
-  # Debug information for MongoDB connection string
-  message(paste("MongoDB URI class:", class(pars$storage$mongodb$connection_string)))
-  message(paste("MongoDB URI length:", nchar(pars$storage$mongodb$connection_string)))
-  if (nchar(pars$storage$mongodb$connection_string) > 0) {
-    message(paste("MongoDB URI prefix:", substr(pars$storage$mongodb$connection_string, 1, 20), "..."))
-  } else {
-    warning("MongoDB connection string is empty or not set")
-  }
-
-  # Ensure MongoDB connection string is set
-  if (is.null(pars$storage$mongodb$connection_string) || pars$storage$mongodb$connection_string == "") {
-    stop("MongoDB connection string is not set in the configuration or environment variable.")
-  }
-
-  message("Running with parameters (sensitive info redacted)")
-  redacted_pars <- pars
-  redacted_pars$storage$mongodb$connection_string <- "<REDACTED>"
-  # Use dput instead of str to avoid issues with glue
-  message(paste(capture.output(dput(redacted_pars)), collapse = "\n"))
+  logger::log_info("Using configutation: {attr(pars, 'config')}")
+  logger::log_debug("Running with parameters {pars}")
 
   pars
 }

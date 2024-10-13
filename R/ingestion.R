@@ -35,41 +35,73 @@
 #' ingest_landings()
 #' }
 #' @export
-mdb_collection_push <- function(data = NULL, connection_string = NULL, collection_name = NULL, db_name = NULL) {
-  tryCatch({
-    # Debug information
-    message(paste("mdb_collection_push - connection_string class:", class(connection_string)))
-    message(paste("mdb_collection_push - connection_string length:", nchar(connection_string)))
-    message(paste("mdb_collection_push - collection_name:", collection_name))
-    message(paste("mdb_collection_push - db_name:", db_name))
+ingest_landings <- function(log_threshold = logger::DEBUG) {
+  logger::log_threshold(log_threshold)
 
-    # Connect to the MongoDB collection
-    collection <- mongolite::mongo(
-      collection = collection_name,
-      db = db_name,
-      url = connection_string
+  conf <- read_config()
+
+  asset_info <- dplyr::tibble(
+    asset_id = c(conf$ingestion$koboform$asset1,
+                 conf$ingestion$koboform$asset2,
+                 conf$ingestion$koboform$asset3,
+                 conf$ingestion$koboform$asset4,
+                 conf$ingestion$koboform$asset5),
+    form_name = c(
+      "Malawi SSF",
+      "FISHERIES eCAS DATA",
+      "FieldDataApp-2024",
+      "FieldDataApp-2024A",
+      "FieldDataApp-2023F"
     )
-    message("MongoDB connection established successfully")
+  )
 
-    # Remove all existing documents in the collection
-    remove_result <- collection$remove("{}")
-    message(paste("Removed", remove_result$removed, "documents from the collection"))
+  # Set up parallel processing plan
+  future::plan("multisession", workers = as.integer(length(future::availableWorkers()) / 2))
 
-    # Insert the new data
-    insert_result <- collection$insert(data)
-    message(paste("Inserted", insert_result$nInserted, "documents into the collection"))
+  logger::log_info("Processing each asset ID...")
 
-    # Return the number of documents inserted
-    return(insert_result)
-  }, error = function(e) {
-    message(paste("Error in mdb_collection_push:", e$message))
-    message(paste("Error class:", class(e)))
-    message(paste("Error call:", deparse(e$call)))
-    message("Traceback:")
-    message(paste(capture.output(traceback()), collapse = "\n"))
-    stop(e)
-  })
+  # Now, process each asset_id and collect results into a list
+  raw_surveys_list <- purrr::map2(
+    asset_info$asset_id,
+    asset_info$form_name,
+    ~ {
+      data <- process_asset(.x, conf)
+      if (!is.null(data)) {
+        data$form_name <- .y
+      }
+      data
+    }
+  )
+
+  # Name the list elements using form names
+  names(raw_surveys_list) <- asset_info$form_name
+
+  # Rename columns for consistency across different forms except "Malawi SSF"
+  renamed_raw <-
+    raw_surveys_list %>%
+    purrr::imap(~ if (.y != "Malawi SSF") {
+      .x %>%
+        dplyr::rename_with(~ stringr::str_replace(., "vessels/", "group_vessel_data/"))
+    } else {
+      .x # Keep "Malawi SSF" unchanged
+    })
+
+  # Combine all forms into a single tibble
+  combined_surveys <- dplyr::bind_rows(renamed_raw, .id = "form_name")
+
+  logger::log_info("Uploading raw data to MongoDB")
+
+  # Upload preprocessed landings
+  mdb_collection_push(
+    data = combined_surveys,
+    connection_string = conf$storage$mongodb$connection_string,
+    collection_name = conf$storage$mongodb$database$pipeline$collection_name$raw,
+    db_name = conf$storage$mongodb$database$pipeline$name
+  )
+
+  logger::log_info("Ingestion process completed successfully.")
 }
+
 #' Process Survey Data into a Tidy Tibble
 #'
 #' The `process_survey` function processes a survey data structure, which may contain multiple vessels
