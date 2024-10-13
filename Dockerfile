@@ -20,7 +20,8 @@ RUN install2.r --error --skipinstalled \
     tidyr \
     univOutl \
     glue \
-    lifecycle
+    lifecycle \
+    remotes
 
 # Install suggests
 RUN install2.r --error --skipinstalled \
