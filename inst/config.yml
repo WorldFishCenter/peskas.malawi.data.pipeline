@@ -1,7 +1,11 @@
 default:
   ingestion:
     koboform:
-      asset_id: !expr Sys.getenv('KOBO_ASSETS_ID')
+      asset1: !expr Sys.getenv('MALAWI_SSF')
+      asset2: !expr Sys.getenv('FISHERIES_ECAS')
+      asset3: !expr Sys.getenv('FIELDDATAAPP_2024')
+      asset4: !expr Sys.getenv('FIELDDATAAPP_2024A')
+      asset5: !expr Sys.getenv('FIELDDATAAPP_2023F')
       username: !expr Sys.getenv('KOBO_USERNAME')
       password: !expr Sys.getenv('KOBO_PASSWORD')
     pds:
@@ -43,7 +47,11 @@ local:
   inherits: development
   ingestion:
     koboform:
-      asset_id: !expr readLines("auth/kobo-assets-id")
+      asset1: !expr readLines("auth/ASSET-malawi-ssf")
+      asset2: !expr readLines("auth/ASSET-fisheries-ecas")
+      asset3: !expr readLines("auth/ASSET-fielddataapp-2024")
+      asset4: !expr readLines("auth/ASSET-fielddataapp-2024A")
+      asset5: !expr readLines("auth/ASSET-fielddataapp-2023F")
       username: !expr readLines("auth/kobo-username")
       password: !expr readLines("auth/kobo-password")
     pds:

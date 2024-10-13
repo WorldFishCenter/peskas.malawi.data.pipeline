@@ -26,13 +26,13 @@ library(magrittr)
 setwd("../..")
 conf <- peskas.malawi.pipeline::read_config()
 
-dat <- 
-    peskas.malawi.pipeline::rmdb_collection_pull(
-      collection_name = conf$storage$mongodb$database$pipeline$collection_name$validated,
-      db_name = conf$storage$mongodb$database$pipeline$name,
-      connection_string = conf$storage$mongodb$connection_string
-    ) |>
-    dplyr::as_tibble()
+dat <-
+  peskas.malawi.pipeline::rmdb_collection_pull(
+    collection_name = conf$storage$mongodb$database$pipeline$collection_name$validated,
+    db_name = conf$storage$mongodb$database$pipeline$name,
+    connection_string = conf$storage$mongodb$connection_string
+  ) |>
+  dplyr::as_tibble()
 
 
 my_palette <- c(

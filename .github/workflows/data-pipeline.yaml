@@ -6,7 +6,11 @@ on:
     - cron:  '0 0 */2 * *'
 
 env:
-  KOBO_ASSETS_ID: ${{ secrets.KOBO_ASSETS_ID }}
+  MALAWI_SSF: ${{ secrets.MALAWI_SSF }}
+  FISHERIES_ECAS: ${{ secrets.FISHERIES_ECAS }}
+  FIELDDATAAPP_2024: ${{ secrets.FIELDDATAAPP_2024 }}
+  FIELDDATAAPP_2024A: ${{ secrets.FIELDDATAAPP_2024A }}
+  FIELDDATAAPP_2023F: ${{ secrets.FIELDDATAAPP_2023F }}
   KOBO_USERNAME: ${{ secrets.KOBO_USERNAME }}
   KOBO_PASSWORD: ${{ secrets.KOBO_PASSWORD }}
   PDS_TOKEN: ${{ secrets.PDS_TOKEN }}
