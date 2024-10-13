@@ -23,6 +23,7 @@ separated by dots. This is useful for transforming deeply nested data structures
 suitable for data frames or tibbles.
 }
 \examples{
+\dontrun{
 nested_list <- list(
   group = list(
     subgroup = list(
@@ -46,5 +47,6 @@ flatten_with_names(nested_list)
 #
 # $item4
 # [1] 4
-
 }
+}
+\keyword{ingestion}

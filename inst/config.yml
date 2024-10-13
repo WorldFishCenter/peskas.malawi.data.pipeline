@@ -1,9 +1,12 @@
 default:
   ingestion:
     koboform:
-      asset_id: !expr Sys.getenv('KOBO_ASSET_ID')
+      asset_id: !expr Sys.getenv('KOBO_ASSETS_ID')
       username: !expr Sys.getenv('KOBO_USERNAME')
       password: !expr Sys.getenv('KOBO_PASSWORD')
+    pds:
+      token: !expr Sys.getenv('PDS_TOKEN')
+      secret: !expr Sys.getenv('PDS_SECRET')
   storage:
     mongodb:
       connection_string: !expr Sys.getenv('MONGODB_CONNECTION_STRING')
@@ -14,10 +17,23 @@ default:
             raw: raw
             preprocessed: preprocessed
             validated: validated
+    google:
+      key: gcs
+      options:
+        project: peskas
+        bucket: kenya-dev
+        service_account_key: !expr Sys.getenv('GCP_SA_KEY')
+  metadata:
+    google_sheets:
+      name: metadata-tables
+      sheet_id: !expr Sys.getenv("GOOGLE_SHEET_ID")
+      tables:
+        - devices
   validation:
     k_nboats: 3
     k_nfishers: 3
     k_catch: 2.5
+    k_pricekg: 5
 
 production:
   storage:
@@ -27,9 +43,18 @@ local:
   inherits: development
   ingestion:
     koboform:
-      asset_id: !expr readLines("auth/kobo-asset-id")
+      asset_id: !expr readLines("auth/kobo-assets-id")
       username: !expr readLines("auth/kobo-username")
       password: !expr readLines("auth/kobo-password")
+    pds:
+      token: !expr readLines('auth/pds-token')
+      secret: !expr readLines('auth/pds-secret')
   storage:
     mongodb:
       connection_string: !expr readLines("auth/mongodb-connection-string")
+    google:
+      options:
+        service_account_key: !expr readLines("auth/gcp-sa-peskas_ingestion-key.json")
+  metadata:
+    google_sheets:
+      sheet_id: !expr readLines("auth/metadata-sheet-id")

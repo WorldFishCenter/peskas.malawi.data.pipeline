@@ -16,8 +16,10 @@ auth/*
 /*.Rcheck/
 ^.DS_Store$
 
-## MongoDB
-.idea
-
+## Data files
+*.rds
+*.xlsx
+*.csv
+*.tsv
 /.quarto/
 docs

@@ -1,11 +1,19 @@
 Package: peskas.malawi.pipeline
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Title: Functions to Implement the Malawi Small Scale Fisheries Data Pipeline
+Version: 1.1.0
+Authors@R: 
+    c(person(given = "Lorenzo",
+             family = "Longobardi",
+             role = c("aut", "cre"),
+             email = "l.longobardi@cgiar.org",
+             comment = c(ORCID = "0000-0003-3126-7341")),
+      person(given = "WorldFish",
+             role = "cph"))
+Description: This package implements the data and modelling pipelines underpinning 
+    the Peskas system for Malawi's small scale fisheries. It provides functions 
+    for data ingestion, preprocessing, validation, and storage, supporting 
+    efficient management and analysis of fisheries data.
 License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -13,16 +21,27 @@ RoxygenNote: 7.3.2
 Imports: 
     config,
     dplyr,
-    git2r,
-    glue,
-    here,
+    furrr,
+    future,
+    httr2,
     KoboconnectR,
-    lifecycle,
     logger,
+    lubridate,
     magrittr,
     mongolite,
     purrr,
-    rlang
+    readr,
+    rlang,
+    stringr,
+    tibble,
+    tidyr,
+    univOutl,
+    glue,
+    lifecycle
+Suggests: 
+    git2r,
+    googlesheets4,
+    here
 Depends: 
     R (>= 2.10)
 Roxygen: list(markdown = TRUE)

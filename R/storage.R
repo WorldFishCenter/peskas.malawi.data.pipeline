@@ -69,3 +69,53 @@ mdb_collection_push <- function(data = NULL, connection_string = NULL, collectio
   # Return the number of documents inserted
   return(result)
 }
+
+#' Get metadata tables
+#'
+#' Get Metadata tables from Google sheets. This function downloads
+#' the tables include information about the fishery.
+#'
+#' The parameters needed in `conf.yml` are:
+#'
+#' ```
+#' storage:
+#'   storage_name:
+#'     key:
+#'     options:
+#'       project:
+#'       bucket:
+#'       service_account_key:
+#' ```
+#'
+#' @param log_threshold The logging threshold level. Default is logger::DEBUG.
+#'
+#' @export
+#' @keywords storage
+#'
+#' @examples
+#' \dontrun{
+#' # Ensure you have the necessary configuration in conf.yml
+#' metadata_tables <- get_metadata()
+#' }
+get_metadata <- function(log_threshold = logger::DEBUG) {
+  logger::log_threshold(log_threshold)
+  conf <- read_config()
+
+  logger::log_info("Authenticating for google drive")
+  googlesheets4::gs4_auth(
+    path = conf$storage$google$options$service_account_key,
+    use_oob = TRUE
+  )
+  logger::log_info("Downloading metadata tables")
+
+  tables <-
+    conf$metadata$google_sheets$tables %>%
+    rlang::set_names() %>%
+    purrr::map(~ googlesheets4::range_read(
+      ss = conf$metadata$google_sheets$sheet_id,
+      sheet = .x,
+      col_types = "c"
+    ))
+
+  tables
+}

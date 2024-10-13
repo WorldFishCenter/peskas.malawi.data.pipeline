@@ -19,12 +19,21 @@ toc_float: true
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 ```{r, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(magrittr)
 
-dat <- peskas.malawi.pipeline::all_groups_processed
+setwd("../..")
+conf <- peskas.malawi.pipeline::read_config()
+
+dat <- 
+    peskas.malawi.pipeline::rmdb_collection_pull(
+      collection_name = conf$storage$mongodb$database$pipeline$collection_name$validated,
+      db_name = conf$storage$mongodb$database$pipeline$name,
+      connection_string = conf$storage$mongodb$connection_string
+    ) |>
+    dplyr::as_tibble()
+
 
 my_palette <- c(
   "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00",

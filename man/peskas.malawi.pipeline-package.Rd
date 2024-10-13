@@ -4,8 +4,17 @@
 \name{peskas.malawi.pipeline-package}
 \alias{peskas.malawi.pipeline}
 \alias{peskas.malawi.pipeline-package}
-\title{peskas.malawi.pipeline: What the Package Does (Title Case)}
+\title{peskas.malawi.pipeline: Functions to Implement the Malawi Small Scale Fisheries Data Pipeline}
 \description{
-More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.
+This package implements the data and modelling pipelines underpinning the Peskas system for Malawi's small scale fisheries. It provides functions for data ingestion, preprocessing, validation, and storage, supporting efficient management and analysis of fisheries data.
+}
+\author{
+\strong{Maintainer}: Lorenzo Longobardi \email{l.longobardi@cgiar.org} (\href{https://orcid.org/0000-0003-3126-7341}{ORCID})
+
+Other contributors:
+\itemize{
+  \item WorldFish [copyright holder]
+}
+
 }
 \keyword{internal}

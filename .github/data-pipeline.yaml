@@ -1,0 +1,83 @@
+name: Peskas Malawi Data Pipeline
+
+on:
+  push:
+  schedule:
+    - cron:  '0 0 */2 * *'
+
+env:
+  KOBO_ASSETS_ID: ${{ secrets.KOBO_ASSETS_ID }}
+  KOBO_USERNAME: ${{ secrets.KOBO_USERNAME }}
+  KOBO_KOBO_PASSWORD: ${{ secrets.KOBO_PASSWORD }}
+  PDS_TOKEN: ${{ secrets.PESKAS_PDS_TOKEN }}
+  PDS_SECRET: ${{ secrets.PESKAS_PDS_SECRET }}
+  MONGODB_CONNECTION_STRING: ${{ secrets.MONGODB_CONNECTION_STRING }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+
+jobs:
+  build-container:
+    name: Build R container
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build image with cache
+        id: build-docker
+        uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: $GITHUB_ACTOR
+          password: "${{ secrets.GITHUB_TOKEN }}"
+          registry: docker.pkg.github.com
+          image_name: r-runner-peskas-malawi
+          dockerfile: Dockerfile.prod
+
+  ingest-landings:
+    name: Ingest Malawi SSF landings
+    needs: build-container
+    runs-on: ubuntu-20.04
+    container:
+      image: docker.pkg.github.com/worldfishcenter/peskas.malawi.data.pipeline/r-runner-peskas-malawi
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: echo "R_CONFIG_ACTIVE=production" >> $GITHUB_ENV
+      - name: Call ingest_landings()
+        run: Rscript -e 'peskas.malawi.data.pipeline::ingest_landings()'
+
+  preprocess-landings:
+    name: Preprocess Malawi SSF landings
+    needs: ingest-landings
+    runs-on: ubuntu-20.04
+    container:
+      image: docker.pkg.github.com/worldfishcenter/peskas.malawi.data.pipeline/r-runner-peskas-malawi
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: echo "R_CONFIG_ACTIVE=production" >> $GITHUB_ENV
+      - name: Call preprocess_landings()
+        run: Rscript -e 'peskas.malawi.data.pipeline::preprocess_landings()'
+
+
+  validate-landings:
+    name: Validate Malawi SSF landings
+    needs: preprocess-landings
+    runs-on: ubuntu-20.04
+    container:
+      image: docker.pkg.github.com/worldfishcenter/peskas.malawi.data.pipeline/r-runner-peskas-malawi
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: echo "R_CONFIG_ACTIVE=production" >> $GITHUB_ENV
+      - name: Validate landings
+        run: Rscript -e 'peskas.malawi.data.pipeline::validate_landings()'
+
