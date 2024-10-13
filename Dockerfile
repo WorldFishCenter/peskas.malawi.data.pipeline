@@ -26,5 +26,4 @@ RUN install2.r --error --skipinstalled \
 # Install suggests
 RUN install2.r --error --skipinstalled \
     git2r \
-    googlesheets4 \
-    here
+    googlesheets4

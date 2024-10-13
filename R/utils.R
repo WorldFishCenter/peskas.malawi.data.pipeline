@@ -65,11 +65,9 @@ add_version <- function(filename, extension = "", sha_nchar = 7, sep = "__") {
 read_config <- function() {
   logger::log_info("Loading configuration file...")
 
-  config_file <- here::here("inst", "config.yml")
-
   pars <- config::get(
     config = Sys.getenv("R_CONFIG_ACTIVE", "default"),
-    file = config_file
+    file = system.file("config.yml", package = "peskas.malawi.data.pipeline")
   )
 
   logger::log_info("Using configutation: {attr(pars, 'config')}")
