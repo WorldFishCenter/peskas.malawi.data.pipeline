@@ -41,11 +41,13 @@ ingest_landings <- function(log_threshold = logger::DEBUG) {
   conf <- read_config()
 
   asset_info <- dplyr::tibble(
-    asset_id = c(conf$ingestion$koboform$asset1,
-                 conf$ingestion$koboform$asset2,
-                 conf$ingestion$koboform$asset3,
-                 conf$ingestion$koboform$asset4,
-                 conf$ingestion$koboform$asset5),
+    asset_id = c(
+      conf$ingestion$koboform$asset1,
+      conf$ingestion$koboform$asset2,
+      conf$ingestion$koboform$asset3,
+      conf$ingestion$koboform$asset4,
+      conf$ingestion$koboform$asset5
+    ),
     form_name = c(
       "Malawi SSF",
       "FISHERIES eCAS DATA",

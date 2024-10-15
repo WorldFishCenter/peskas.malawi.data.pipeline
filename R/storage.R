@@ -27,22 +27,25 @@ mdb_collection_pull <- function(connection_string = NULL, collection_name = NULL
   # Connect to the MongoDB collection
   collection <- mongolite::mongo(collection = collection_name, db = db_name, url = connection_string)
 
-  # Retrieve the order document
-  order_doc <- collection$find(query = '{"type": "column_order"}')
+  # Retrieve the metadata document
+  metadata <- collection$find(query = '{"type": "metadata"}')
 
-  if (nrow(order_doc) == 0) {
-    warning("Column order information not found. The order of variables may not match the original.")
-    return(collection$find(query = '{"type": {"$ne": "column_order"}}'))
+  # Retrieve all data documents
+  data <- collection$find(query = '{"type": {"$ne": "metadata"}}')
+
+  if (nrow(metadata) > 0 && "columns" %in% names(metadata)) {
+    stored_columns <- metadata$columns[[1]]
+
+    # Ensure all stored columns exist in the data
+    for (col in stored_columns) {
+      if (!(col %in% names(data))) {
+        data[[col]] <- NA
+      }
+    }
+
+    # Reorder columns to match stored order, and include any extra columns at the end
+    data <- data[, c(stored_columns, setdiff(names(data), stored_columns))]
   }
-
-  # Get the original column order
-  original_order <- order_doc$columns[[1]]
-
-  # Retrieve the data, excluding the order document
-  data <- collection$find(query = '{"type": {"$ne": "column_order"}}')
-
-  # Reorder the columns
-  data <- data[, original_order]
 
   return(data)
 }
@@ -75,15 +78,6 @@ mdb_collection_pull <- function(connection_string = NULL, collection_name = NULL
 #'
 #' @export
 mdb_collection_push <- function(data = NULL, connection_string = NULL, collection_name = NULL, db_name = NULL) {
-  # Store the original column names
-  original_columns <- names(data)
-
-  # Create a special document to store the original column order
-  order_doc <- list(
-    type = "column_order",
-    columns = original_columns
-  )
-
   # Connect to the MongoDB collection
   collection <- mongolite::mongo(
     collection = collection_name,
@@ -94,13 +88,20 @@ mdb_collection_push <- function(data = NULL, connection_string = NULL, collectio
   # Remove all existing documents in the collection
   collection$remove("{}")
 
-  # Insert the order document first
-  collection$insert(order_doc)
+  # Create a metadata document with column information
+  metadata <- list(
+    type = "metadata",
+    columns = names(data),
+    timestamp = Sys.time()
+  )
+
+  # Insert the metadata document first
+  collection$insert(metadata)
 
   # Insert the new data
   collection$insert(data)
 
-  # Return the number of documents in the collection (excluding the order document)
+  # Return the number of documents in the collection (excluding the metadata document)
   return(collection$count() - 1)
 }
 
