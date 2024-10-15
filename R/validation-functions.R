@@ -120,7 +120,7 @@ validate_nfishers <- function(data = NULL, k = NULL) {
         x = .data$n_fishers,
         alert_if_larger = 2, logt = TRUE, k = k
       ),
-      alert_n_fishers = dplyr::coalesce(.data$n_fishers, .data$alert_n_fishers_neg)
+      alert_n_fishers = dplyr::coalesce(.data$alert_n_fishers, .data$alert_n_fishers_neg)
     ) %>%
     dplyr::select(-"alert_n_fishers_neg") %>%
     dplyr::mutate(n_fishers = ifelse(is.na(.data$alert_n_fishers), .data$n_fishers, NA_real_))

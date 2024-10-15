@@ -21,6 +21,10 @@ default:
             raw: raw
             preprocessed: preprocessed
             validated: validated
+        app:
+          name: app
+          collection_name:
+            summary: DataSummaries
     google:
       key: gcs
       options:

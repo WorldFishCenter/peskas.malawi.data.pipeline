@@ -1,7 +1,7 @@
 Package: peskas.malawi.data.pipeline
 Type: Package
 Title: Functions to Implement the Malawi Small Scale Fisheries Data Pipeline
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: 
     c(person(given = "Lorenzo",
              family = "Longobardi",

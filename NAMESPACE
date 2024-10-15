@@ -3,6 +3,7 @@
 export("%>%")
 export(add_version)
 export(alert_outlier)
+export(export_landings)
 export(flatten_with_names)
 export(get_bounds)
 export(get_catch_bounds)

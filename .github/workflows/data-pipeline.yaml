@@ -83,3 +83,20 @@ jobs:
         run: echo "R_CONFIG_ACTIVE=production" >> $GITHUB_ENV
       - name: Validate landings
         run: Rscript -e 'peskas.malawi.data.pipeline::validate_landings()'
+
+  export-landings:
+    name: Export Malawi SSF landings
+    needs: preprocess-landings
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/worldfishcenter/peskas.malawi.data.pipeline/r-runner-peskas-malawi
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: echo "R_CONFIG_ACTIVE=production" >> $GITHUB_ENV
+      - name: Export landings
+        run: Rscript -e 'peskas.malawi.data.pipeline::export_landings()'
+

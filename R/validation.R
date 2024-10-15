@@ -80,7 +80,11 @@ validate_landings <- function(log_threshold = logger::DEBUG) {
     dplyr::left_join(validated_vars, by = c("form_name", "survey_id")) %>%
     dplyr::relocate("n_fishers", "n_boats", .before = "n_women") %>%
     dplyr::relocate("landing_date", .before = "submission_date") %>%
-    dplyr::relocate("price_kg_USD", .after = "catch_kg")
+    dplyr::relocate("price_kg_USD", .after = "catch_kg") %>%
+    dplyr::relocate("gear", "gear_n_hauls", "mesh_size_mm", "gillnets", .before = "gear_depth") %>%
+    dplyr::relocate("catch_price_type", "catch_usage", "catch_taxon", "weight_type", .before = "catch_kg") %>%
+    dplyr::relocate("catch_taxon_other", .after = "catch_taxon") %>%
+    dplyr::relocate("why_not_fishing", .after = "fishing_today")
 
 
   # alerts data

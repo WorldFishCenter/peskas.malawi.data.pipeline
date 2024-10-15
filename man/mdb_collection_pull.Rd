@@ -18,10 +18,12 @@ mdb_collection_pull(
 \item{db_name}{A character string specifying the name of the database. Default is NULL.}
 }
 \value{
-A data frame containing all documents from the specified collection.
+A data frame containing all documents from the specified collection, with columns ordered
+as they were when the data was originally pushed to MongoDB.
 }
 \description{
-This function connects to a MongoDB database and retrieves all documents from a specified collection.
+This function connects to a MongoDB database and retrieves all documents from a specified collection,
+maintaining the original column order if available.
 }
 \examples{
 \dontrun{

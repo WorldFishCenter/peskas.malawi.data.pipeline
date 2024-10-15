@@ -1,3 +1,14 @@
+# peskas.malawi.data.pipeline 1.2.0
+
+### New features
+
+Added `export_landings()` function to export the validated landings data to a MongoDB collection dedicated to applications.
+
+### Bug fixes
+
+MongoDB connection was reordering the columns of the dataframes. This was fixed by adding a column order.
+
+
 # peskas.malawi.data.pipeline 1.1.0
 
 ### New features

@@ -21,11 +21,12 @@ mdb_collection_push(
 \item{db_name}{A character string specifying the name of the database.}
 }
 \value{
-The number of documents inserted.
+The number of data documents inserted into the collection (excluding the order document).
 }
 \description{
 This function connects to a MongoDB database, removes all existing documents
-from a specified collection, and then inserts new data.
+from a specified collection, and then inserts new data. It also stores the
+original column order to maintain data structure consistency.
 }
 \examples{
 \dontrun{
