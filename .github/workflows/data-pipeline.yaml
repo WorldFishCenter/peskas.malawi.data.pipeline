@@ -86,7 +86,7 @@ jobs:
 
   export-landings:
     name: Export Malawi SSF landings
-    needs: preprocess-landings
+    needs: validate-landings
     runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/worldfishcenter/peskas.malawi.data.pipeline/r-runner-peskas-malawi
