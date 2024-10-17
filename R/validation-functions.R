@@ -81,7 +81,8 @@ validate_dates <- function(data = NULL) {
       .data$survey_id,
       .data$landing_date,
       .data$submission_date,
-      alert_date = ifelse(.data$landing_date > .data$submission_date, 1, NA_real_)
+      alert_date = ifelse(.data$landing_date > .data$submission_date, 1, NA_real_),
+      alert_date = ifelse(.data$landing_date < "2020-12-31", 1, NA_real_)
     ) %>%
     dplyr::select(-"submission_date") %>%
     dplyr::mutate(
