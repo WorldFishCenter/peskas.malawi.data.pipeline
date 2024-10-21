@@ -21,3 +21,4 @@ This function calculates the bounds for outlier detection using the LocScaleB me
 get_bounds(c(1, 2, 3, 4, 5), k = 3)
 
 }
+\keyword{validation}

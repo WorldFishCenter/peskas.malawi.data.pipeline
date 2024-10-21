@@ -379,6 +379,8 @@ validate_this_imei <- function(this_imei, this_id = NULL, valid_imeis) {
 #' @examples
 #' get_bounds(c(1, 2, 3, 4, 5), k = 3)
 #'
+#' @keywords validation
+#'
 #' @export
 get_bounds <- function(x = NULL, k = NULL) {
   univOutl::LocScaleB(x, logt = TRUE, k = k) %>%
