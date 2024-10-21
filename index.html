@@ -51,6 +51,54 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="peskasmalawidatapipeline">peskas.malawi.data.pipeline<a class="anchor" aria-label="anchor" href="#peskasmalawidatapipeline"></a>
 </h1></div>
+<!-- badges: start -->
+
+<p>The goal of peskas.malawi.data.pipeline is to implement, deploy, and execute the data and modelling pipelines that underpin Peskas in Malawi. ## The pipeline is an R package</p>
+<p>peskas.malawi.data.pipeline is structured as an R package because it makes it easier to write production-grade software. Specifically, structuring the code as an R package allows us to:</p>
+<ul>
+<li>better handle system and package dependencies,</li>
+<li>forces us to split the code into functions,</li>
+<li>makes it easier to document the code, and</li>
+<li>makes it easier to test the code</li>
+</ul>
+<p>We make heavy use of <a href="https://engineering-shiny.org" class="external-link">tidyverse style conventions</a> and the <a href="https://usethis.r-lib.org" class="external-link">usethis</a> package to automate tasks during project setup and deployment.</p>
+<p>For more information about the rationale of structuring the pipeline as a package check <a href="https://engineering-shiny.org/structuring-project.html#structuring-your-app_" class="external-link">Chapter 3</a> in <a href="https://engineering-shiny.org" class="external-link"><em>Engineering Production-Grade Shiny Apps</em></a>. The book is focused on Shiny applications but the rationale also applies to data pipelines and production-ready code in general.</p>
+<div class="section level2">
+<h2 id="how-the-pipeline-works">How the pipeline works<a class="anchor" aria-label="anchor" href="#how-the-pipeline-works"></a>
+</h2>
+<p>The pipeline is composed of different modules:</p>
+<ol style="list-style-type: decimal">
+<li><p>Data Collection: On site fishing landing surveys and continuous, solar-powered GPS vessel trackers to collect and send data in near real-time, alongside fishery metadata for a thorough data-gathering process.</p></li>
+<li><p>Pre-processing: Data formatting, shaping, and standardisation to prepare the raw data for analysis.</p></li>
+<li><p>Validation: Outlier detection and error identification, and includes an alert system to maintain data quality.</p></li>
+<li><p>Analytics: Modelling fisheries indicators, nutritional characterization, and data mining to extract valuable insights.</p></li>
+<li><p>Data export: Automated dissemination of processed and analysed fisheries data to ensure accessibility and comprehension. This involves restructuring data for dashboard integration and open publication.</p></li>
+<li><p>isualisation: Tools for data reporting and sharing of insights through a comprehensive dedicated web app dashboard (not hosted in this repository).</p></li>
+</ol>
+<p>See <a href="https://www.researchsquare.com/article/rs-4386336/v1" class="external-link">Peskas: Automated analytics for small-scale, data-deficient fisheries</a> for further details.</p>
+</div>
+<div class="section level2">
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<p>This package uses a configuration file <a href="inst/config.yml"><code>config.yml</code></a> to manage environment-specific settings and connections. To get started, familiarize yourself with the package structure, particularly the <a href="R"><code>R</code></a> directory where the main functions are located.</p>
+<p>Each function typically reads the configuration using <code><a href="reference/read_config.html">read_config()</a></code> to access necessary parameters. To work on this package locally, you’ll need to set up the required authentication files in the <code>auth/</code> directory and ensure your environment variables are properly set. Remember to run <code>devtools::load_all()</code> when testing changes locally. If you’re new to R package development, consider reviewing the <a href="https://r-pkgs.org" class="external-link"><em>R packages</em></a> book by Hadley Wickham and Jenny Brian.</p>
+</div>
+<div class="section level2">
+<h2 id="quick-guide-for-contributors">Quick Guide for Contributors<a class="anchor" aria-label="anchor" href="#quick-guide-for-contributors"></a>
+</h2>
+<p>To keep our repository clean and efficient, please keep these guidelines in mind:</p>
+<ul>
+<li>Always work on a new branch, not directly on main.</li>
+<li>Write clear, concise commit messages.</li>
+<li>Avoid storing intermediate and garbage files, especially in the root folder.</li>
+<li>Strive for soft-coded solutions.</li>
+<li>Maintain consistent code style throughout the project.</li>
+<li>Document your code well - future you (and others) will thank you.</li>
+<li>Test your changes thoroughly before submitting a pull request.</li>
+<li>Keep your fork synced with the main repository.</li>
+</ul>
+<p>These practices help us maintain a clean, efficient codebase that’s easier for everyone to work with. For more detailed guidelines, check out our <a href="CONTRIBUTING.html">CONTRIBUTING.md</a> file.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
@@ -76,7 +124,13 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/WorldFishCenter/peskas.malawi.data.pipeline/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/WorldFishCenter/peskas.malawi.data.pipeline/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/WorldFishCenter/peskas.malawi.data.pipeline" class="external-link"><img src="https://codecov.io/gh/WorldFishCenter/peskas.malawi.data.pipeline/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
