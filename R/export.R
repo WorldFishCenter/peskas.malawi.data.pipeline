@@ -47,11 +47,13 @@ export_landings <- function(log_threshold = logger::DEBUG) {
   selected <-
     validated_data %>%
     dplyr::select(
-      1:4, "sample_district",
+      1:4,
+      "sample_district",
       "landing_site",
       "lat",
       "lon",
       "n_fishers",
+      "n_boats",
       "trip_length",
       "gear",
       "catch_usage",
