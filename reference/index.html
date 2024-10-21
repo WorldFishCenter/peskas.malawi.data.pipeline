@@ -31,9 +31,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a></h2>
 
-
+      <div class="section-desc"><p>These are arguably the most important functions in the package. Each of these functions executes a step in the data pipeline.</p></div>
 
 
     </div><div class="section level2">
@@ -43,52 +43,10 @@
 
       <dl><dt>
 
-          <code><a href="add_version.html">add_version()</a></code>
-
-        </dt>
-        <dd>Add timestamp and sha string to a file name</dd>
-      </dl><dl><dt>
-
-          <code><a href="alert_outlier.html">alert_outlier()</a></code>
-
-        </dt>
-        <dd>Generate an Alert Vector Based on Outlier Detection</dd>
-      </dl><dl><dt>
-
           <code><a href="export_landings.html">export_landings()</a></code>
 
         </dt>
         <dd>Export Selected Landings Data</dd>
-      </dl><dl><dt>
-
-          <code><a href="flatten_with_names.html">flatten_with_names()</a></code>
-
-        </dt>
-        <dd>Recursively Flatten a Nested List with Concatenated Names</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_bounds.html">get_bounds()</a></code>
-
-        </dt>
-        <dd>Get Bounds for Outlier Detection</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_catch_bounds.html">get_catch_bounds()</a></code>
-
-        </dt>
-        <dd>Get Catch Bounds</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_metadata.html">get_metadata()</a></code>
-
-        </dt>
-        <dd>Get metadata tables</dd>
-      </dl><dl><dt>
-
-          <code><a href="get_pricekg_bounds.html">get_pricekg_bounds()</a></code>
-
-        </dt>
-        <dd>Get Catch Price Bounds</dd>
       </dl><dl><dt>
 
           <code><a href="get_trip_points.html">get_trip_points()</a></code>
@@ -109,6 +67,35 @@
         <dd>Ingest Survey landings from Kobotoolbox into MongoDB</dd>
       </dl><dl><dt>
 
+          <code><a href="preprocess_landings.html">preprocess_landings()</a></code>
+
+        </dt>
+        <dd>Preprocess Landings Data</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_landings.html">validate_landings()</a></code>
+
+        </dt>
+        <dd>Validate Fisheries Data</dd>
+      </dl></div><div class="section level2">
+      <h2 id="cloud-storage">Cloud Storage<a class="anchor" aria-label="anchor" href="#cloud-storage"></a></h2>
+
+      <div class="section-desc"><p>Functions that interact with cloud storage providers.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="get_metadata.html">get_metadata()</a></code>
+
+        </dt>
+        <dd>Get metadata tables</dd>
+      </dl><dl><dt>
+
           <code><a href="mdb_collection_pull.html">mdb_collection_pull()</a></code>
 
         </dt>
@@ -119,12 +106,41 @@
 
         </dt>
         <dd>Upload Data to MongoDB and Overwrite Existing Content</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      <h2 id="ingestion">Ingestion<a class="anchor" aria-label="anchor" href="#ingestion"></a></h2>
 
-          <code><a href="preprocess_landings.html">preprocess_landings()</a></code>
+      <div class="section-desc"><p>Functions dedicated to the ingestion module</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="flatten_with_names.html">flatten_with_names()</a></code>
 
         </dt>
-        <dd>Preprocess Landings Data</dd>
+        <dd>Recursively Flatten a Nested List with Concatenated Names</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_trip_points.html">get_trip_points()</a></code>
+
+        </dt>
+        <dd>Retrieve Trip Points from Pelagic Data API</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_trips.html">get_trips()</a></code>
+
+        </dt>
+        <dd>Retrieve Trip Details from Pelagic Data API</dd>
+      </dl><dl><dt>
+
+          <code><a href="ingest_landings.html">ingest_landings()</a></code>
+
+        </dt>
+        <dd>Ingest Survey landings from Kobotoolbox into MongoDB</dd>
       </dl><dl><dt>
 
           <code><a href="process_asset.html">process_asset()</a></code>
@@ -137,18 +153,64 @@
 
         </dt>
         <dd>Process Survey Data into a Tidy Tibble</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a></h2>
 
-          <code><a href="read_config.html">read_config()</a></code>
+      <div class="section-desc"><p>Functions dedicated to the preprocessing module</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="preprocess_landings.html">preprocess_landings()</a></code>
 
         </dt>
-        <dd>Read configuration file</dd>
+        <dd>Preprocess Landings Data</dd>
       </dl><dl><dt>
 
           <code><a href="standardize_list_column.html">standardize_list_column()</a></code>
 
         </dt>
         <dd>Standardize a List-Column in a Data Frame</dd>
+      </dl></div><div class="section level2">
+      <h2 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a></h2>
+
+      <div class="section-desc"><p>Functions dedicated to the validation module</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="alert_outlier.html">alert_outlier()</a></code>
+
+        </dt>
+        <dd>Generate an Alert Vector Based on Outlier Detection</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_bounds.html">get_bounds()</a></code>
+
+        </dt>
+        <dd>Get Bounds for Outlier Detection</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_catch_bounds.html">get_catch_bounds()</a></code>
+
+        </dt>
+        <dd>Get Catch Bounds</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_pricekg_bounds.html">get_pricekg_bounds()</a></code>
+
+        </dt>
+        <dd>Get Catch Price Bounds</dd>
       </dl><dl><dt>
 
           <code><a href="validate_catch.html">validate_catch()</a></code>
@@ -191,8 +253,49 @@
 
         </dt>
         <dd>Validate IMEI Number</dd>
+      </dl></div><div class="section level2">
+      <h2 id="export">Export<a class="anchor" aria-label="anchor" href="#export"></a></h2>
+
+      <div class="section-desc"><p>Functions dedicated dissemination of processed and analysed fisheries data</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="export_landings.html">export_landings()</a></code>
+
+        </dt>
+        <dd>Export Selected Landings Data</dd>
+      </dl></div><div class="section level2">
+      <h2 id="helper-functions">Helper functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h2>
+
+      <div class="section-desc"><p>Functions dedicated to data processing.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="add_version.html">add_version()</a></code>
+
+        </dt>
+        <dd>Add timestamp and sha string to a file name</dd>
+      </dl><dl><dt>
+
+          <code><a href="read_config.html">read_config()</a></code>
+
+        </dt>
+        <dd>Read configuration file</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
