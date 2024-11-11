@@ -49,7 +49,7 @@ using the LocScaleB function for outlier detection.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame containing columns: catch_taxon, catch_price_type, and price_kg_USD.</p></dd>
+<dd><p>A data frame containing columns: catch_taxon, catch_price_type, and price_kg.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -63,7 +63,7 @@ using the LocScaleB function for outlier detection.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The function filters out rows where catch_taxon is "0" or "no_catch". It then splits the data
-based on catch_taxon and applies the get_bounds() function to each group's price_kg_USD values.
+based on catch_taxon and applies the get_bounds() function to each group's price_kg values.
 The resulting bounds are then combined and transformed back from log scale.</p>
     </div>
 

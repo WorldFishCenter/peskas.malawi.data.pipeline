@@ -56,7 +56,7 @@ are set to NA.</p>
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A data frame containing catch data with columns: form_name, survey_id, catch_taxon,
-price_kg_USD, catch_price, and catch_kg.</p></dd>
+price_kg, catch_price, and catch_kg.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -67,7 +67,7 @@ price_kg_USD, catch_price, and catch_kg.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data frame with columns:</p><ul><li><p><code>form_name</code>: The name of the form associated with the survey</p></li>
 <li><p><code>survey_id</code>: The unique identifier for each survey</p></li>
-<li><p><code>price_kg_USD</code>: The original price per kg if valid, otherwise NA</p></li>
+<li><p><code>price_kg</code>: The original price per kg if valid, otherwise NA</p></li>
 <li><p><code>catch_kg</code>: The original catch weight if price is valid, otherwise NA</p></li>
 <li><p><code>catch_price</code>: The original total catch price if price per kg is valid, otherwise NA</p></li>
 <li><p><code>alert_price</code>: A numeric value (4) indicating an outlier, or NA if the value is valid</p></li>
@@ -75,8 +75,8 @@ price_kg_USD, catch_price, and catch_kg.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The function first calculates price bounds using get_pricekg_bounds(). It then joins these bounds
-with the input data and compares each price_kg_USD value to its corresponding upper and lower bounds.
-If the price_kg_USD value is outside the bounds, an alert is set and the price_kg_USD, catch_kg,
+with the input data and compares each price_kg value to its corresponding upper and lower bounds.
+If the price_kg value is outside the bounds, an alert is set and the price_kg, catch_kg,
 and catch_price values are changed to NA.</p>
     </div>
 
