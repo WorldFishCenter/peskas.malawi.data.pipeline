@@ -21,6 +21,7 @@ default:
             raw: raw
             preprocessed: preprocessed
             validated: validated
+            merged: merged_trips
         app:
           name: app
           collection_name:
