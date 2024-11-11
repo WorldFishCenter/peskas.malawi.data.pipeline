@@ -64,7 +64,7 @@ validate_landings <- function(log_threshold = logger::DEBUG) {
       dates_alert = validate_dates(data = preprocessed_data),
       fishers_alert = validate_nfishers(data = preprocessed_data, k = conf$validation$k_nfishers),
       nboats_alert = validate_nboats(data = preprocessed_data, k = conf$validation$k_nboats),
-      catch_price_alert = validate_pricekg(data = preprocessed_data, k = 5)
+      catch_price_alert = validate_pricekg(data = preprocessed_data, k = conf$validation$k_pricekg)
     )
 
   validated_vars <-
@@ -80,7 +80,7 @@ validate_landings <- function(log_threshold = logger::DEBUG) {
     dplyr::left_join(validated_vars, by = c("form_name", "survey_id")) %>%
     dplyr::relocate("n_fishers", "n_boats", .before = "n_women") %>%
     dplyr::relocate("landing_date", .before = "submission_date") %>%
-    dplyr::relocate("price_kg_USD", .after = "catch_kg") %>%
+    dplyr::relocate("price_kg", .after = "catch_kg") %>%
     dplyr::relocate("gear", "gear_n_hauls", "mesh_size_mm", "gillnets", .before = "gear_depth") %>%
     dplyr::relocate("catch_price_type", "catch_usage", "catch_taxon", "weight_type", .before = "catch_kg") %>%
     dplyr::relocate("catch_taxon_other", .after = "catch_taxon") %>%

@@ -60,7 +60,7 @@ export_landings <- function(log_threshold = logger::DEBUG) {
       "catch_taxon",
       "catch_price",
       "catch_kg",
-      "price_kg_USD"
+      "price_kg"
     )
 
 

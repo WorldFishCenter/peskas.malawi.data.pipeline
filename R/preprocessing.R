@@ -305,8 +305,7 @@ preprocess_landings <- function(log_threshold = logger::DEBUG) {
         "gear_length",
         "gear_n_hauls"
       ), ~ as.numeric(.x)),
-      price_kg_USD = ifelse(.data$catch_price_type == "total", .data$catch_price / .data$catch_kg, .data$catch_price),
-      price_kg_USD = .data$price_kg_USD * 0.0005764
+      price_kg = ifelse(.data$catch_price_type == "total", .data$catch_price / .data$catch_kg, .data$catch_price)
     ) %>%
     dplyr::distinct() %>%
     dplyr::select(
@@ -316,7 +315,7 @@ preprocess_landings <- function(log_threshold = logger::DEBUG) {
       "gillnets",
       "trader_sex":"catch_usage",
       "catch_taxon":"weight_type",
-      "price_kg_USD"
+      "price_kg"
     ) %>%
     # fix nested column fields (gillnets)
     dplyr::mutate(

@@ -41,7 +41,7 @@ default:
     k_nboats: 3
     k_nfishers: 3
     k_catch: 2.5
-    k_pricekg: 5
+    k_pricekg: 9
 
 production:
   storage:

@@ -237,25 +237,25 @@ validate_catch <- function(data = NULL, k = NULL) {
 #' This function calculates the upper and lower bounds for catch price data based on catch taxon,
 #' using the LocScaleB function for outlier detection.
 #'
-#' @param data A data frame containing columns: catch_taxon, catch_price_type, and price_kg_USD.
+#' @param data A data frame containing columns: catch_taxon, catch_price_type, and price_kg.
 #' @param k A numeric value used in the LocScaleB function for outlier detection.
 #'
 #' @return A data frame with columns: catch_taxon, lower.low (lower bound), and upper.up (upper bound).
 #'
 #' @details
 #' The function filters out rows where catch_taxon is "0" or "no_catch". It then splits the data
-#' based on catch_taxon and applies the get_bounds() function to each group's price_kg_USD values.
+#' based on catch_taxon and applies the get_bounds() function to each group's price_kg values.
 #' The resulting bounds are then combined and transformed back from log scale.
 #'
 #' @keywords validation
 #' @export
 get_pricekg_bounds <- function(data = NULL, k = NULL) {
   data %>%
-    dplyr::select("catch_taxon", "catch_price_type", "price_kg_USD") %>%
+    dplyr::select("catch_taxon", "catch_price_type", "price_kg") %>%
     dplyr::filter(!.data$catch_taxon == "0", !.data$catch_taxon == "no_catch") %>%
     split(.$catch_taxon) %>%
     purrr::discard(~ nrow(.) == 0) %>%
-    purrr::map(~ get_bounds(.x$price_kg_USD, k = k)) %>%
+    purrr::map(~ get_bounds(.x$price_kg, k = k)) %>%
     dplyr::bind_rows(.id = "catch_taxon") %>%
     dplyr::mutate(
       lower.low = exp(.data$lower.low),
@@ -271,40 +271,47 @@ get_pricekg_bounds <- function(data = NULL, k = NULL) {
 #' are set to NA.
 #'
 #' @param data A data frame containing catch data with columns: form_name, survey_id, catch_taxon,
-#'             price_kg_USD, catch_price, and catch_kg.
+#'             price_kg, catch_price, and catch_kg.
 #' @param k A numeric value used in the get_pricekg_bounds function for outlier detection.
 #'
 #' @return A data frame with columns:
 #'   - `form_name`: The name of the form associated with the survey
 #'   - `survey_id`: The unique identifier for each survey
-#'   - `price_kg_USD`: The original price per kg if valid, otherwise NA
+#'   - `price_kg`: The original price per kg if valid, otherwise NA
 #'   - `catch_kg`: The original catch weight if price is valid, otherwise NA
 #'   - `catch_price`: The original total catch price if price per kg is valid, otherwise NA
 #'   - `alert_price`: A numeric value (4) indicating an outlier, or NA if the value is valid
 #'
 #' @details
 #' The function first calculates price bounds using get_pricekg_bounds(). It then joins these bounds
-#' with the input data and compares each price_kg_USD value to its corresponding upper and lower bounds.
-#' If the price_kg_USD value is outside the bounds, an alert is set and the price_kg_USD, catch_kg,
+#' with the input data and compares each price_kg value to its corresponding upper and lower bounds.
+#' If the price_kg value is outside the bounds, an alert is set and the price_kg, catch_kg,
 #' and catch_price values are changed to NA.
 #'
 #' @keywords validation
 #' @export
 validate_pricekg <- function(data = NULL, k = NULL) {
+  # Get price bounds
   bounds <- get_pricekg_bounds(data = data, k = k)
 
+  # Validate and transform data
   data %>%
-    dplyr::select("form_name", "survey_id", "catch_taxon", "price_kg_USD", "catch_price", "catch_kg") %>%
+    dplyr::select("form_name", "survey_id", "catch_taxon", "price_kg", "catch_price", "catch_kg") %>%
     dplyr::left_join(bounds, by = "catch_taxon") %>%
-    dplyr::rowwise() |>
+    dplyr::rowwise() %>%
     dplyr::mutate(
-      alert_price = ifelse(.data$price_kg_USD >= .data$upper.up, 4, NA_real_),
-      alert_price = ifelse(.data$price_kg_USD <= .data$lower.low, 4, NA_real_),
-      price_kg_USD = ifelse(is.na(.data$alert_price), .data$price_kg_USD, NA_real_),
-      catch_kg = ifelse(is.na(.data$alert_price), .data$catch_kg, NA_real_),
-      catch_price = ifelse(is.na(.data$alert_price), .data$catch_price, NA_real_)
+      # First determine alerts using case_when
+      alert_price = dplyr::case_when(
+        .data$price_kg >= .data$upper.up ~ 4,
+        .data$price_kg <= .data$lower.low ~ 4,
+        TRUE ~ NA_real_
+      ),
+      # Then mask values where alerts exist
+      price_kg = ifelse(!is.na(.data$alert_price), NA_real_, .data$price_kg),
+      catch_kg = ifelse(!is.na(.data$alert_price), NA_real_, .data$catch_kg),
+      catch_price = ifelse(!is.na(.data$alert_price), NA_real_, .data$catch_price)
     ) %>%
-    dplyr::ungroup() |>
+    dplyr::ungroup() %>%
     dplyr::select(-c("lower.low", "upper.up", "catch_taxon"))
 }
 

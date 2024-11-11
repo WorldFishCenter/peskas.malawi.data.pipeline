@@ -7,7 +7,7 @@
 get_pricekg_bounds(data = NULL, k = NULL)
 }
 \arguments{
-\item{data}{A data frame containing columns: catch_taxon, catch_price_type, and price_kg_USD.}
+\item{data}{A data frame containing columns: catch_taxon, catch_price_type, and price_kg.}
 
 \item{k}{A numeric value used in the LocScaleB function for outlier detection.}
 }
@@ -20,7 +20,7 @@ using the LocScaleB function for outlier detection.
 }
 \details{
 The function filters out rows where catch_taxon is "0" or "no_catch". It then splits the data
-based on catch_taxon and applies the get_bounds() function to each group's price_kg_USD values.
+based on catch_taxon and applies the get_bounds() function to each group's price_kg values.
 The resulting bounds are then combined and transformed back from log scale.
 }
 \keyword{validation}

@@ -8,7 +8,7 @@ validate_pricekg(data = NULL, k = NULL)
 }
 \arguments{
 \item{data}{A data frame containing catch data with columns: form_name, survey_id, catch_taxon,
-price_kg_USD, catch_price, and catch_kg.}
+price_kg, catch_price, and catch_kg.}
 
 \item{k}{A numeric value used in the get_pricekg_bounds function for outlier detection.}
 }
@@ -17,7 +17,7 @@ A data frame with columns:
 \itemize{
 \item \code{form_name}: The name of the form associated with the survey
 \item \code{survey_id}: The unique identifier for each survey
-\item \code{price_kg_USD}: The original price per kg if valid, otherwise NA
+\item \code{price_kg}: The original price per kg if valid, otherwise NA
 \item \code{catch_kg}: The original catch weight if price is valid, otherwise NA
 \item \code{catch_price}: The original total catch price if price per kg is valid, otherwise NA
 \item \code{alert_price}: A numeric value (4) indicating an outlier, or NA if the value is valid
@@ -31,8 +31,8 @@ are set to NA.
 }
 \details{
 The function first calculates price bounds using get_pricekg_bounds(). It then joins these bounds
-with the input data and compares each price_kg_USD value to its corresponding upper and lower bounds.
-If the price_kg_USD value is outside the bounds, an alert is set and the price_kg_USD, catch_kg,
+with the input data and compares each price_kg value to its corresponding upper and lower bounds.
+If the price_kg value is outside the bounds, an alert is set and the price_kg, catch_kg,
 and catch_price values are changed to NA.
 }
 \keyword{validation}
