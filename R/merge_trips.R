@@ -118,7 +118,7 @@ merge_trips <- function(log_threshold = logger::DEBUG) {
   mdb_collection_push(
     data = merged_trips,
     connection_string = conf$storage$mongodb$connection_string,
-    collection_name = conf$storage$mongodb$database$pipeline$collection_name$merged_trips,
+    collection_name = conf$storage$mongodb$database$pipeline$collection_name$merged,
     db_name = conf$storage$mongodb$database$pipeline$name
   )
 
