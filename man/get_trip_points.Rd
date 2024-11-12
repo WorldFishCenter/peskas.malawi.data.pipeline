@@ -2,61 +2,91 @@
 % Please edit documentation in R/ingestion.R
 \name{get_trip_points}
 \alias{get_trip_points}
-\title{Retrieve Trip Points from Pelagic Data API}
+\title{Get Trip Points from Pelagic Data Systems API}
 \usage{
 get_trip_points(
   token = NULL,
   secret = NULL,
+  id = NULL,
   dateFrom = NULL,
   dateTo = NULL,
+  path = NULL,
   imeis = NULL,
   deviceInfo = FALSE,
   errant = FALSE,
   withLastSeen = FALSE,
-  tags = NULL
+  tags = NULL,
+  overwrite = TRUE
 )
 }
 \arguments{
-\item{token}{Character string. The API token for authentication.}
+\item{token}{Character string. Access token for the PDS API.}
 
-\item{secret}{Character string. The API secret for authentication.}
+\item{secret}{Character string. Secret key for the PDS API.}
 
-\item{dateFrom}{Character string. Start date in 'YYYY-MM-dd' format.}
+\item{id}{Numeric or character. Optional trip ID. If provided, retrieves points for
+specific trip. If NULL, dateFrom and dateTo must be provided.}
 
-\item{dateTo}{Character string. End date in 'YYYY-MM-dd' format.}
+\item{dateFrom}{Character string. Start date for data retrieval in format "YYYY-MM-DD".
+Required if id is NULL.}
 
-\item{imeis}{Character vector. Optional. Filter by IMEI numbers.}
+\item{dateTo}{Character string. End date for data retrieval in format "YYYY-MM-DD".
+Required if id is NULL.}
 
-\item{deviceInfo}{Logical. If TRUE, include device IMEI and ID fields in the response. Default is FALSE.}
+\item{path}{Character string. Optional path where the CSV file should be saved.
+If provided, the function returns the path instead of the data frame.}
 
-\item{errant}{Logical. If TRUE, include errant GPS points in the response. Default is FALSE.}
+\item{imeis}{Vector of character or numeric. Optional IMEI numbers to filter the data.}
 
-\item{withLastSeen}{Logical. If TRUE, include device last seen date in the response. Default is FALSE.}
+\item{deviceInfo}{Logical. If TRUE, includes device information in the response.
+Default is FALSE.}
 
-\item{tags}{Character vector. Optional. Filter by trip tags.}
+\item{errant}{Logical. If TRUE, includes errant points in the response.
+Default is FALSE.}
+
+\item{withLastSeen}{Logical. If TRUE, includes last seen information.
+Default is FALSE.}
+
+\item{tags}{Vector of character. Optional tags to filter the data.}
+
+\item{overwrite}{Logical. If TRUE, will overwrite existing file when path is provided.
+Default is TRUE.}
 }
 \value{
-A data frame containing trip points data.
+If path is NULL, returns a tibble containing the trip points data.
+If path is provided, returns the file path as a character string.
 }
 \description{
-This function retrieves trip points from the Pelagic Data API for a specified time range,
-with options to filter by IMEIs and include additional information.
+Retrieves trip points data from the Pelagic Data Systems API. The function can either
+fetch data for a specific trip ID or for a date range. The response can be returned
+as a data frame or written directly to a file.
 }
 \examples{
 \dontrun{
-trip_points <- get_trip_points(
+# Get data for a specific trip
+trip_data <- get_trip_points(
   token = "your_token",
   secret = "your_secret",
-  dateFrom = "2020-05-01",
-  dateTo = "2020-05-02",
-  imeis = c("123456789", "987654321"),
-  deviceInfo = TRUE,
-  errant = TRUE,
-  withLastSeen = TRUE,
-  tags = c("tag1", "tag2")
+  id = "12345",
+  deviceInfo = TRUE
+)
+
+# Get data for a date range
+date_data <- get_trip_points(
+  token = "your_token",
+  secret = "your_secret",
+  dateFrom = "2024-01-01",
+  dateTo = "2024-01-31"
+)
+
+# Save data directly to file
+file_path <- get_trip_points(
+  token = "your_token",
+  secret = "your_secret",
+  id = "12345",
+  path = "trip_data.csv"
 )
 }
 
 }
 \keyword{ingestion}
-\keyword{workflow}

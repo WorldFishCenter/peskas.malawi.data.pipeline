@@ -121,6 +121,4 @@ merge_trips <- function(log_threshold = logger::DEBUG) {
     collection_name = conf$storage$mongodb$database$pipeline$collection_name$merged,
     db_name = conf$storage$mongodb$database$pipeline$name
   )
-
 }
-

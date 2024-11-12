@@ -408,7 +408,7 @@ flatten_with_names <- function(x, parent_name = "") {
 #' @param tags Character vector. Optional. Filter by trip tags.
 #'
 #' @return A data frame containing trip details.
-#' @keywords workflow ingestion
+#' @keywords ingestion
 #' @examples
 #' \dontrun{
 #' trips <- get_trips(
@@ -476,51 +476,100 @@ get_trips <- function(token = NULL,
 
 
 
-#' Retrieve Trip Points from Pelagic Data API
+#' Get Trip Points from Pelagic Data Systems API
 #'
-#' This function retrieves trip points from the Pelagic Data API for a specified time range,
-#' with options to filter by IMEIs and include additional information.
+#' Retrieves trip points data from the Pelagic Data Systems API. The function can either
+#' fetch data for a specific trip ID or for a date range. The response can be returned
+#' as a data frame or written directly to a file.
 #'
-#' @param token Character string. The API token for authentication.
-#' @param secret Character string. The API secret for authentication.
-#' @param dateFrom Character string. Start date in 'YYYY-MM-dd' format.
-#' @param dateTo Character string. End date in 'YYYY-MM-dd' format.
-#' @param imeis Character vector. Optional. Filter by IMEI numbers.
-#' @param deviceInfo Logical. If TRUE, include device IMEI and ID fields in the response. Default is FALSE.
-#' @param errant Logical. If TRUE, include errant GPS points in the response. Default is FALSE.
-#' @param withLastSeen Logical. If TRUE, include device last seen date in the response. Default is FALSE.
-#' @param tags Character vector. Optional. Filter by trip tags.
+#' @param token Character string. Access token for the PDS API.
+#' @param secret Character string. Secret key for the PDS API.
+#' @param id Numeric or character. Optional trip ID. If provided, retrieves points for
+#'   specific trip. If NULL, dateFrom and dateTo must be provided.
+#' @param dateFrom Character string. Start date for data retrieval in format "YYYY-MM-DD".
+#'   Required if id is NULL.
+#' @param dateTo Character string. End date for data retrieval in format "YYYY-MM-DD".
+#'   Required if id is NULL.
+#' @param path Character string. Optional path where the CSV file should be saved.
+#'   If provided, the function returns the path instead of the data frame.
+#' @param imeis Vector of character or numeric. Optional IMEI numbers to filter the data.
+#' @param deviceInfo Logical. If TRUE, includes device information in the response.
+#'   Default is FALSE.
+#' @param errant Logical. If TRUE, includes errant points in the response.
+#'   Default is FALSE.
+#' @param withLastSeen Logical. If TRUE, includes last seen information.
+#'   Default is FALSE.
+#' @param tags Vector of character. Optional tags to filter the data.
+#' @param overwrite Logical. If TRUE, will overwrite existing file when path is provided.
+#'   Default is TRUE.
 #'
-#' @return A data frame containing trip points data.
+#' @return If path is NULL, returns a tibble containing the trip points data.
+#'   If path is provided, returns the file path as a character string.
 #'
-#' @keywords workflow ingestion
 #' @examples
 #' \dontrun{
-#' trip_points <- get_trip_points(
+#' # Get data for a specific trip
+#' trip_data <- get_trip_points(
 #'   token = "your_token",
 #'   secret = "your_secret",
-#'   dateFrom = "2020-05-01",
-#'   dateTo = "2020-05-02",
-#'   imeis = c("123456789", "987654321"),
-#'   deviceInfo = TRUE,
-#'   errant = TRUE,
-#'   withLastSeen = TRUE,
-#'   tags = c("tag1", "tag2")
+#'   id = "12345",
+#'   deviceInfo = TRUE
+#' )
+#'
+#' # Get data for a date range
+#' date_data <- get_trip_points(
+#'   token = "your_token",
+#'   secret = "your_secret",
+#'   dateFrom = "2024-01-01",
+#'   dateTo = "2024-01-31"
+#' )
+#'
+#' # Save data directly to file
+#' file_path <- get_trip_points(
+#'   token = "your_token",
+#'   secret = "your_secret",
+#'   id = "12345",
+#'   path = "trip_data.csv"
 #' )
 #' }
+#'
+#' @keywords ingestion
 #'
 #' @export
 get_trip_points <- function(token = NULL,
                             secret = NULL,
+                            id = NULL,
                             dateFrom = NULL,
                             dateTo = NULL,
+                            path = NULL,
                             imeis = NULL,
                             deviceInfo = FALSE,
                             errant = FALSE,
                             withLastSeen = FALSE,
-                            tags = NULL) {
-  # Base URL
-  base_url <- paste0("https://analytics.pelagicdata.com/api/", token, "/v1/points/", dateFrom, "/", dateTo)
+                            tags = NULL,
+                            overwrite = TRUE) {
+  # Build base URL based on whether ID is provided
+  if (!is.null(id)) {
+    base_url <- paste0(
+      "https://analytics.pelagicdata.com/api/",
+      token,
+      "/v1/trips/",
+      id,
+      "/points"
+    )
+  } else {
+    if (is.null(dateFrom) || is.null(dateTo)) {
+      stop("dateFrom and dateTo are required when id is not provided")
+    }
+    base_url <- paste0(
+      "https://analytics.pelagicdata.com/api/",
+      token,
+      "/v1/points/",
+      dateFrom,
+      "/",
+      dateTo
+    )
+  }
 
   # Build query parameters
   query_params <- list()
@@ -539,6 +588,10 @@ get_trip_points <- function(token = NULL,
   if (!is.null(tags)) {
     query_params$tags <- paste(tags, collapse = ",")
   }
+  # Add format=csv if saving to file
+  if (!is.null(path)) {
+    query_params$format <- "csv"
+  }
 
   # Build the request
   req <- httr2::request(base_url) %>%
@@ -551,14 +604,26 @@ get_trip_points <- function(token = NULL,
   # Perform the request
   resp <- req %>% httr2::req_perform()
 
-  # Check for HTTP errors
+  # Check for HTTP errors first
   if (httr2::resp_status(resp) != 200) {
-    stop("Request failed with status: ", httr2::resp_status(resp), "\n", httr2::resp_body_string(resp))
+    stop(
+      "Request failed with status: ",
+      httr2::resp_status(resp),
+      "\n",
+      httr2::resp_body_string(resp)
+    )
   }
 
-  # Read CSV content
-  content_text <- httr2::resp_body_string(resp)
-  trip_points_data <- readr::read_csv(content_text, show_col_types = FALSE)
+  # Handle the response based on whether path is provided
+  if (!is.null(path)) {
+    # Write the response content to file
+    writeBin(httr2::resp_body_raw(resp), path)
+    result <- path
+  } else {
+    # Read CSV content
+    content_text <- httr2::resp_body_string(resp)
+    result <- readr::read_csv(content_text, show_col_types = FALSE)
+  }
 
-  return(trip_points_data)
+  return(result)
 }

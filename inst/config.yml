@@ -26,6 +26,7 @@ default:
           name: app
           collection_name:
             summary: DataSummaries
+            matched_tracks: matched_trips_gps
     google:
       key: gcs
       options:
