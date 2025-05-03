@@ -31,7 +31,6 @@ default:
       key: gcs
       options:
         project: peskas
-        bucket: kenya-dev
         service_account_key: !expr Sys.getenv('GCP_SA_KEY')
   metadata:
     google_sheets:
